@@ -1,0 +1,26 @@
+{
+  "name": "ccaas-dap-api",
+  "version": "1.0.0",
+  "description": "Google CCaaS Direct Access Point API Webhook",
+  "main": "index.mjs",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "functions-framework --target=doRequest --port=8080",
+    "lint": "eslint . --ext .js,.mjs",
+    "test": "node --test",
+    "deploy": "gcloud functions deploy ccaip-dap-api --gen2 --trigger-http --runtime=nodejs20 --source=. --entry-point=doRequest --allow-unauthenticated"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-google": "^0.14.0",
+    "supertest": "^7.0.0"
+  }
+}

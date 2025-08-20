@@ -1,0 +1,72 @@
+# Copyright 2024 Google LLC
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#      https://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+steps:
+  # Step 1: Install dependencies
+  - name: 'node:20'
+    entrypoint: 'npm'
+    args: ['ci']
+    id: 'Install Dependencies'
+
+  # Step 2: Run Linting
+  - name: 'node:20'
+    entrypoint: 'npm'
+    args: ['run', 'lint']
+    id: 'Lint Code'
+
+  # Step 3: Run Unit Tests
+  - name: 'node:20'
+    entrypoint: 'npm'
+    args: ['test']
+    id: 'Run Tests'
+
+  # Step 4: Scan for known vulnerabilities
+  - name: 'node:20'
+    entrypoint: 'npm'
+    args: ['audit', '--audit-level=high']
+    id: 'Vulnerability Scan'
+
+  # Step 5: Deploy the function to Cloud Functions
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'Deploy Function'
+    args:
+      - 'gcloud'
+      - 'functions'
+      - 'deploy'
+      - 'ccaas-dap-api'
+      - '--gen2'
+      - '--region=${_REGION}'
+      - '--source=.'
+      - '--entry-point=doRequest'
+      - '--trigger-http'
+      - '--runtime=nodejs20'
+      - '--set-env-vars=DEBUG=${_DEBUG}'
+      - '--set-secrets=API_KEY=DAP_API_KEY:latest'
+      - '--timeout=60s'
+      - '--allow-unauthenticated'
+      - '--ingress-settings=all'
+      - '--min-instances=${_MIN_INSTANCES}'
+      - '--max-instances=100'
+      - '--memory=${_MEMORY}'
+      - '--service-account=$_SERVICE_ACCOUNT@$_PROJECT_ID.iam.gserviceaccount.com'
+
+# The 'substitutions' block provides the default values for the variables above.
+substitutions:
+  _REGION: 'us-central1'
+  _DEBUG: 'false'
+  _MEMORY: '512MB'
+  _MIN_INSTANCES: '0'
+  # _SERVICE_ACCOUNT and _PROJECT_ID must be provided when you run the build or configure the trigger.
+
+timeout: '1200s'
