@@ -48,7 +48,7 @@ graph TD
     B -- invokes --> C{Node.js Function};
     C -- checks --> D[X-Api-Key matches Secret?];
     D -- Yes --> E[Execute Routing Logic];
-    E --> F[Return JSON Response e.g., {'dap_route': true}];
+    E --> F["Return JSON Response e.g., {'dap_route': true}"];
     D -- No --> G[Return 401 Unauthorized];
 ```
 
@@ -58,7 +58,6 @@ graph TD
 
 ```
 .
-├── .eslintrc.json    # Configuration for ESLint code quality rules.
 ├── cloudbuild.yaml   # CI/CD pipeline definition for Google Cloud Build.
 ├── index.mjs         # The main Cloud Function source code.
 ├── index.test.mjs    # Automated tests for the function.
